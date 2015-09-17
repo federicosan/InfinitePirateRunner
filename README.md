@@ -1,6 +1,6 @@
-# Project Name
+# Infinite Pirate Runner
 
-Infinite Pirate Runner game made at the Baltimore Hackathon in 2015.
+Infinite runner game (pirate themed!) made at the Baltimore Hackathon in 2015.
 
 ## Installation
 
