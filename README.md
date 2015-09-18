@@ -11,6 +11,14 @@ Run the followng commands using npm:
 * npm install express --save
 * npm install socket.io
 
+On Windows, you may have trouble using npm to install socket.io (may be fixed sometime soon) with nodejs 4.0.0. 
+As a temporary workaround, do the following:
+
+* Go to C:\Users\<YOUR USERNAME>\node_modules\socket.io\package.json
+* Change the engine.io dependency from 1.5.2 to gsklee/engine.io#385863d
+* After that edit, cd into your node_modules\socket.io directory, and run npm install --production
+[Click here to read more.](https://github.com/socketio/socket.io/issues/2213#issuecomment-137709393)
+
 ## Usage
 
 TODO: Write usage instructions
