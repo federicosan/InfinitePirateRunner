@@ -4,7 +4,12 @@ Infinite runner game (pirate themed!) made at the Baltimore Hackathon in 2015.
 
 ## Installation
 
-TODO: Describe the installation process
+Install node.js
+
+Run the followng commands using npm:
+*npm install phaser
+*npm install express --save
+*npm install socket.io
 
 ## Usage
 
