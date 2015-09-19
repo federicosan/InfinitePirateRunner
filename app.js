@@ -14,6 +14,8 @@ app.get('/', function(req, res) {
 io.on('connection', function(client) {  
     client.on('join', function(data) {
         console.log(data);
+        //send a message back to the currently connected client
+        client.emit('messageConnected', 'You connected successfully!');
     });
 });
 

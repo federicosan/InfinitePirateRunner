@@ -37,7 +37,8 @@ SeafarerGame.Preload.prototype = {
     this.load.image('bg_layer_two', 'Resources/Layer2_Planks.png');
     //ground layer
     this.load.image('bg_layer_three', 'Resources/singleBlock.png')
-
+    //1st pirate
+    this.load.spritesheet('pirate1', 'Resources/BadPirateWalk.png', 100, 200, 4);
     //Simple delay - just so people can get to see Matthews beautiful artwork
     timeCheck = this.game.time.now;
   },

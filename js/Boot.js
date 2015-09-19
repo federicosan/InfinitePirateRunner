@@ -20,7 +20,7 @@ SeafarerGame.Boot.prototype = {
     this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
     //physics system
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+    this.physics.startSystem(Phaser.Physics.ARCADE);
   
     //Start the preload state
     this.state.start('Preload');
