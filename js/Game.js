@@ -63,7 +63,7 @@ SeafarerGame.Game.prototype = {
         //physics
         this.game.physics.arcade.enable(this.player);
         this.game.physics.arcade.enable(this.bg_layer_three);
-        this.player.body.gravity.y = 1000;
+        this.player.body.gravity.y = 1300;
         this.bg_layer_three.body.immovable = true;
         this.bg_layer_three.body.allowGravity = false;
 
@@ -138,7 +138,7 @@ SeafarerGame.Game.prototype = {
             //10% chance to generate projectile
             if(randomValueProjetile <= 3)
             {
-              var chooseProjectile = this.game.rnd.integerInRange(0,1);
+              var chooseProjectile = this.game.rnd.integerInRange(0,2);
               var projectileHeight = this.game.rnd.integerInRange(0,2);
               var actualProjHeight = 0;
               var proj;
@@ -160,11 +160,19 @@ SeafarerGame.Game.prototype = {
                   proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'spinningbomb');
                   proj.animations.add('spin', [0,1,2,3]);
                   proj.animations.play('spin', 10, true);
+                  proj.body.setSize(30, 20, 25, 20);
                   break;
                 case 1:
                   proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'seagull');
                   proj.animations.add('flap', [0,1,2,3,4,5,6,7]);
                   proj.animations.play('flap', 10, true);
+                  proj.body.setSize(45, 15, 35, 35);
+                  break;
+                case 2:
+                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'crab');
+                  proj.animations.add('crabwalk', [0,1,2,3]);
+                  proj.animations.play('crabwalk', 10, true);
+                  proj.body.setSize(18, 33, 50, 34);
                   break;
               }
               //physics properties
@@ -188,7 +196,8 @@ SeafarerGame.Game.prototype = {
     playerLand: function() {
         this.player.animations.play('walk', 10, true);
     },
-    playerHit: function(sprite, groupSprite){
+    playerHit: function(sprite, projectileSprite){
+      projectileSprite.kill();
       this.player.hits--;
       this.hitsActualText.setText("x" + this.player.hits);
       //check death
