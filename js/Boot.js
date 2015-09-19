@@ -13,7 +13,7 @@ SeafarerGame.Boot.prototype = {
     this.game.load.spritesheet('preloadbar', 'Resources/TreasureAnimation.png', 100, 100, 3);
   },
   create: function() {
-    //the game will have a sky blue background
+    //the game will have a black background
     this.game.stage.backgroundColor = '#fffff';
 
     //scaling options
