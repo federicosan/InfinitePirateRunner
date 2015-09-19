@@ -14,7 +14,7 @@ SeafarerGame.Preload.prototype = {
   preload: function() {
     //Show the preload bar
     var preloadBar = this.game.add.sprite(350, 250, 'preloadbar');
-     var load = preloadBar.animations.add('open');
+    var load = preloadBar.animations.add('open');
     // 5 frames per second and loop
     preloadBar.animations.play('open', 5, true);
     //Loading text
