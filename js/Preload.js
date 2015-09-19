@@ -53,6 +53,10 @@ SeafarerGame.Preload.prototype = {
         this.load.spritesheet('pirate1', 'Resources/PegLegFull.png', 100, 200, 20);
         //Hearts
         this.load.spritesheet('hearts', 'Resources/Heart.png', 100, 100, 6);
+        //bomb projectile
+        this.load.spritesheet('spinningbomb', 'Resources/SpinningBomb.png', 100, 100, 4);
+        //bomb projectile
+        this.load.spritesheet('seagull', 'Resources/Seagull.png', 100, 100, 8);
 
         //Simple delay - just so people can get to see Matthews beautiful artwork
         timeCheck = this.game.time.now;

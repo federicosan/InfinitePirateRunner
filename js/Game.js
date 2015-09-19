@@ -67,6 +67,10 @@ SeafarerGame.Game.prototype = {
         this.bg_layer_three.body.immovable = true;
         this.bg_layer_three.body.allowGravity = false;
 
+        //Projectile group
+        this.projectilesGroup = this.game.add.group();
+        this.projectilesGroup.enableBody = true;
+
         //follow camera
         this.game.camera.follow(this.player);
 
@@ -82,8 +86,8 @@ SeafarerGame.Game.prototype = {
             if (this.player.alive != false) {
                 //Player to ground
                 this.game.physics.arcade.collide(this.player, this.bg_layer_three, this.playerLand, null, this);
-                //Player to block platform
-                this.game.physics.arcade.overlap(this.player, this.blockPlatforms, this.playerLand, null, this);
+                //Player to projectiles
+                this.game.physics.arcade.collide(this.player, this.projectilesGroup, this.playerHit, null, this);
 
                 if (!this.wrapping && this.player.x < this.game.width) {
                     this.wraps++;
@@ -109,6 +113,11 @@ SeafarerGame.Game.prototype = {
                     this.player.body.velocity.x = 300;
                     this.bg_layer_one.x += .3;
                     this.player.body.setSize(100, 200, 0, 0);
+                }else if (this.cursors.left.isDown) {
+                    this.player.animations.play('walk', 10, true);
+                    this.player.body.velocity.x = -300;
+                    this.bg_layer_one.x -= .3;
+                    this.player.body.setSize(100, 200, 0, 0);
                 } else {
                     this.player.body.velocity.x = 0;
                     this.player.animations.play('idle', 10, true);
@@ -117,12 +126,51 @@ SeafarerGame.Game.prototype = {
                 //The game world is infinite in the x-direction, so we wrap around.
                 //We subtract padding so the player will remain in the middle of the screen when
                 //wrapping, rather than going to the end of the screen first
+                if(this.player.x <= 0)
+                {
+                  this.player.x = 0;
+                }
                 this.game.world.wrap(this.player, 0, true);
             }
 
-            //check death
-            if (this.player.hits == 0) {
-                //end game
+            //generate projectiles based on probability and level
+            var randomValueProjetile = this.game.rnd.integerInRange(0, 1000);
+            //10% chance to generate projectile
+            if(randomValueProjetile <= 3)
+            {
+              var chooseProjectile = this.game.rnd.integerInRange(0,1);
+              var projectileHeight = this.game.rnd.integerInRange(0,2);
+              var actualProjHeight = 0;
+              var proj;
+              switch(projectileHeight)
+              {
+                case 0:
+                    actualProjHeight = 200;
+                  break;
+                case 1:
+                    actualProjHeight = 300;
+                  break;
+                case 2:
+                    actualProjHeight = 400;
+                  break;
+              }
+              switch(chooseProjectile)
+              {
+                case 0:
+                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'spinningbomb');
+                  proj.animations.add('spin', [0,1,2,3]);
+                  proj.animations.play('spin', 10, true);
+                  break;
+                case 1:
+                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'seagull');
+                  proj.animations.add('flap', [0,1,2,3,4,5,6,7]);
+                  proj.animations.play('flap', 10, true);
+                  break;
+              }
+              //physics properties
+              proj.body.velocity.x = -300;
+              proj.body.immovable = true;
+              proj.body.collideWorldBounds = false;
             }
         }
     },
@@ -134,13 +182,28 @@ SeafarerGame.Game.prototype = {
         //when the ground is a sprite, we need to test for "touching" instead of "blocked"
         if (this.player.body.touching.down) {
             this.player.animations.play('jump', 7, false);
-            this.player.body.velocity.y -= 500;
+            this.player.body.velocity.y -= 450;
         }
     },
     playerLand: function() {
         this.player.animations.play('walk', 10, true);
     },
-    throwItems: function() {
-
+    playerHit: function(sprite, groupSprite){
+      this.player.hits--;
+      this.hitsActualText.setText("x" + this.player.hits);
+      //check death
+      if (this.player.hits == 0) {
+          //end game
+          sprite.kill();
+          //Levels completed
+          var deadText = "Arrgh crap. You died."
+          var deadTextStyle = {
+              font: "40px Arial",
+              fill: "#FFFFFF",
+              align: "center"
+          };
+          var actualDeadText = this.game.add.text(this.game.width/2 - 175, this.game.height/2 - 50, deadText, deadTextStyle);
+          actualDeadText.fixedToCamera = true;
+      }
     }
 };
