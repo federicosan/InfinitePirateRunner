@@ -29,7 +29,9 @@ may fix your issue - if the change to socket.io has been published to npm. If no
 
 ## Usage
 
-TODO: Write usage instructions
+cd into the downloaded repo and run:
+
+* node app.js
 
 ## Contributing
 
