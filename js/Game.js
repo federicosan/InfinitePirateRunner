@@ -16,7 +16,11 @@ SeafarerGame.Game.prototype = {
     this.bg_layer_one = this.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'bg_layer_one');
     this.bg_layer_two = this.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'bg_layer_two');
     this.bg_layer_three = this.add.tileSprite(0, 500, this.game.world.width, 100, 'bg_layer_three');
-  
+    this.hearts = this.game.add.sprite(680, 0, 'hearts');
+    this.hearts.fixedToCamera = true;
+    this.hearts.animations.add('pulse', [0,1,2,3,4,5]);
+    this.hearts.animations.play('pulse', 10, true); 
+
     //connect to server
     var ipAddress = window.location.href;
     var socket = io.connect(ipAddress);
@@ -29,8 +33,11 @@ SeafarerGame.Game.prototype = {
 
     this.player = this.game.add.sprite(0, this.game.height-100-200, 'pirate1');
     this.player.alive = true;
-    this.player.animations.add('walk');
-    this.player.animations.play('walk', 10, true); 
+    this.player.hits = 3;
+    this.player.animations.add('idle', [0]);
+    this.player.animations.add('walk', [1,2,3,4,5,6,7,8,9]);
+    this.player.animations.add('crouch', [11]);
+    this.player.animations.add('jump', [12,13,14,15,16,17,18,19]);
 
     //physics
     this.game.physics.arcade.enable(this.player);
@@ -52,9 +59,10 @@ SeafarerGame.Game.prototype = {
     if(this.player != null)
     {
       if(this.player.alive != false){
-        this.player.body.velocity.x = 300;
-        this.bg_layer_one.x += .3;
-        this.game.physics.arcade.collide(this.player, this.bg_layer_three, this.playerHit, null, this);
+        //Player to ground
+        this.game.physics.arcade.collide(this.player, this.bg_layer_three, this.playerLand, null, this);
+        //Player to block platform
+        this.game.physics.arcade.overlap(this.player, this.blockPlatforms, this.playerLand, null, this);
         if(!this.wrapping && this.player.x < this.game.width) {
           this.wraps++;
           //We only want to destroy and regenerate once per wrap, so we test with wrapping var
@@ -63,32 +71,59 @@ SeafarerGame.Game.prototype = {
         }else if(this.player.x >= this.game.width) {
           this.wrapping = false;
         }
-        if (this.swipe.isDown && (this.swipe.positionDown.y > this.swipe.position.y)) {
+
+        if (this.cursors.up.isDown) {
           this.playerJump();
-        }
-        else if (this.cursors.up.isDown) {
-          this.playerJump();
+          this.player.body.setSize(100, 200, 0, 0);
+          if(this.player.body.velocity.x > 0)
+          {
+            this.bg_layer_one.x += .3;
+          }
+        }else if(this.cursors.down.isDown && this.player.body.touching.down)
+        {
+          this.player.animations.play('crouch', 30, false); 
+          this.player.body.velocity.x = 0;
+          this.player.body.setSize(100, 150, 0, 50);
+        }else if(this.cursors.right.isDown)
+        {
+          this.player.animations.play('walk', 10, true); 
+          this.player.body.velocity.x = 300;
+          this.bg_layer_one.x += .3;
+          this.player.body.setSize(100, 200, 0, 0);
+        }else
+        {
+          this.player.body.velocity.x = 0;
+          this.player.animations.play('idle', 10, true); 
+          this.player.body.setSize(100, 200, 0, 0);
         }
         //The game world is infinite in the x-direction, so we wrap around.
         //We subtract padding so the player will remain in the middle of the screen when
         //wrapping, rather than going to the end of the screen first
         this.game.world.wrap(this.player, 0, false, true, false);
       }
+
+      //Text for lives (or hits)
+      var text1 = "x" + this.player.hits;
+      var style1 = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
+      var t1 = this.game.add.text(750, 40, text1, style1);
+      t1.fixedToCamera = true;
     }
   },
   render: function() {
         this.game.debug.text("FPS: " + this.game.time.fps || '--', 20, 30, "#00ff00", "15px Courier"); 
-  },
-  createPlayer: function() {
-
+        this.game.world.bringToTop(this.player);
   },
   playerJump: function() {
     //when the ground is a sprite, we need to test for "touching" instead of "blocked"
     if(this.player.body.touching.down) {
+      this.player.animations.play('jump', 7, false); 
       this.player.body.velocity.y -= 500;
-    }    
+    }  
   },
-  playerHit: function(){
+  playerLand: function() {
+    this.player.animations.play('walk', 10, true); 
+  },
+  throwItems: function(){
 
   }
 };
