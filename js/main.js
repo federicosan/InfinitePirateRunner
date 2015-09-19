@@ -1,4 +1,4 @@
-//Start the Sefarers
+//Start the Sefarers Journey
 var SeafarerGame = SeafarerGame || {};
 
 //Initiate the game object and the specified resolution
