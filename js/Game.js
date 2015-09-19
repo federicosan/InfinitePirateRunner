@@ -39,6 +39,12 @@ SeafarerGame.Game.prototype = {
     this.player.animations.add('crouch', [11]);
     this.player.animations.add('jump', [12,13,14,15,16,17,18,19]);
 
+    //Text for lives (or hits)
+    var text1 = "x" + this.player.hits;
+    var style1 = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
+    var t1 = this.game.add.text(750, 40, text1, style1);
+    t1.fixedToCamera = true;
+
     //physics
     this.game.physics.arcade.enable(this.player);
     this.game.physics.arcade.enable(this.bg_layer_three);
@@ -101,12 +107,6 @@ SeafarerGame.Game.prototype = {
         //wrapping, rather than going to the end of the screen first
         this.game.world.wrap(this.player, 0, false, true, false);
       }
-
-      //Text for lives (or hits)
-      var text1 = "x" + this.player.hits;
-      var style1 = { font: "20px Arial", fill: "#FFFFFF", align: "center" };
-      var t1 = this.game.add.text(750, 40, text1, style1);
-      t1.fixedToCamera = true;
     }
   },
   render: function() {
