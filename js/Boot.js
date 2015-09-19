@@ -4,25 +4,25 @@
 
 var SeafarerGame = SeafarerGame || {};
 
-SeafarerGame.Boot = function(){};
+SeafarerGame.Boot = function() {};
 
 //Game config and assets
 SeafarerGame.Boot.prototype = {
-  preload: function() {
-    //assets for loading screen bar
-    this.game.load.spritesheet('preloadbar', 'Resources/TreasureAnimation.png', 100, 100, 3);
-  },
-  create: function() {
-    //the game will have a black background
-    this.game.stage.backgroundColor = '#fffff';
+    preload: function() {
+        //assets for loading screen bar
+        this.game.load.spritesheet('preloadbar', 'Resources/TreasureAnimation.png', 100, 100, 3);
+    },
+    create: function() {
+        //the game will have a black background
+        this.game.stage.backgroundColor = '#fffff';
 
-    //scaling options
-    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        //scaling options
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    //physics system
-    this.physics.startSystem(Phaser.Physics.ARCADE);
-  
-    //Start the preload state
-    this.state.start('Preload');
-  }
+        //physics system
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+
+        //Start the preload state
+        this.state.start('Preload');
+    }
 };
