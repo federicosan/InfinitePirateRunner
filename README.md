@@ -32,6 +32,7 @@ may fix your issue - if the change to socket.io has been published to npm. If no
 cd into the downloaded repo and run:
 
 * node app.js
+* navigate to http://localhost:8080 in your browser
 
 ## Contributing
 
