@@ -34,13 +34,42 @@ SeafarerGame.Preload.prototype = {
         };
         var t2 = this.game.add.text(this.game.world.centerX - 120, this.game.world.centerY - 70, text2, style2);
 
-        var text3 = "Written by David Kramer and Matt Hammel";
+        var text3 = "A game by David Kramer and Matt Hammel";
         var style3 = {
             font: "15px Arial",
             fill: "#46aaf3",
             align: "center"
         };
         var t3 = this.game.add.text(this.game.world.centerX - 135, this.game.world.centerY + 100, text3, style3);
+        
+        var text4 = "Controls";
+        var style4 = {
+        font: "15px Arial",
+        fill: "#46aaf3",
+        align: "center"
+        };
+        var t4 = this.game.add.text(this.game.world.centerX - 135, this.game.world.centerY + 150, text4, style4);
+        var text5 = "Left, Right :  Move your sprite";
+        var style5 = {
+        font: "13px Arial",
+        fill: "#46aaf3",
+        align: "center"
+        };
+        var t5 = this.game.add.text(this.game.world.centerX - 135, this.game.world.centerY + 165, text5, style5);
+        var text6 = "Up : Jump";
+        var style6 = {
+        font: "13px Arial",
+        fill: "#46aaf3",
+        align: "center"
+        };
+        var t6 = this.game.add.text(this.game.world.centerX - 135, this.game.world.centerY + 179, text6, style6);
+        var text7 = "Down : Crouch";
+        var style7 = {
+        font: "13px Arial",
+        fill: "#46aaf3",
+        align: "center"
+        };
+        var t7 = this.game.add.text(this.game.world.centerX - 135, this.game.world.centerY + 192, text7, style7);
 
         //===== LOAD ASSETS HERE =====
         //Layer 1 ocean
