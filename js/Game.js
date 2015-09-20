@@ -16,6 +16,8 @@ SeafarerGame.Game.prototype = {
         this.bg_layer_one = this.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'bg_layer_one');
         this.bg_layer_two = this.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'bg_layer_two');
         this.bg_layer_three = this.add.tileSprite(0, 500, this.game.world.width, 100, 'bg_layer_three');
+        
+        
         this.hearts = this.game.add.sprite(680, 0, 'hearts');
         this.hearts.fixedToCamera = true;
         this.hearts.animations.add('pulse', [0, 1, 2, 3, 4, 5]);
@@ -290,9 +292,23 @@ SeafarerGame.Game.prototype = {
                 fill: "#FFFFFF",
                 align: "center"
             };
+            var reloadText = "Refresh page to try again!"
+            var reloadTextStyle = {
+                font: "20px Arial",
+                fill: "#FFFFFF",
+                align: "center"
+            };
             var actualDeadText = this.game.add.text(this.game.width / 2 - 175, this.game.height / 2 - 50, deadText, deadTextStyle);
+            var actualReloadText = this.game.add.text(this.game.width / 2 - 100, this.game.height / 2 - 5, reloadText, reloadTextStyle);
+            
+
             actualDeadText.fixedToCamera = true;
+            actualReloadText.fixedToCamera = true;
             this.player.alive = false;
         }
+    },
+    actionOnClick: function() {
+        console.log("couch");
+    
     }
 };
