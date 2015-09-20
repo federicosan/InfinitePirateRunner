@@ -22,13 +22,35 @@ SeafarerGame.Game.prototype = {
         this.hearts.animations.play('pulse', 10, true);
 
         //connect to server
+        var playerList;
+        var playerSpriteList = [];
+
         var ipAddress = window.location.href;
         var socket = io.connect(ipAddress);
         socket.on('connect', function(data) {
-            socket.emit('join', 'Client joined!');
+            console.log("Connected!");
         });
-        socket.on('messageConnected', function(data) {
-            console.log(data);
+        socket.on('all_playerConnected', function(data) {
+            console.log("Player joined!");
+            playerList = data['d'];
+            //Create a sprite for this new player - making sure its not 'me'
+            for (var i = 0; i < playerList.length; i++) {
+                if (playerList[i]['s'] != socket.id) {
+                    playerSpriteList.push(SeafarerGame.game.add.sprite(playerList[i]['x'], playerList[i]['y'], 'pirate2'));
+                }
+            }
+        });
+        socket.on('all_playerDisconnected', function(data) {
+            console.log("Player left!");
+            socketid = data;
+            //Destroy the players corresponding sprite
+            for (var i = 0; i < playerList.length; i++) {
+                if (playerList[i]['s'] == socketid) {
+                    playerSpriteList[i].kill();
+                    playerList.splice(i, 1);
+                    playerSpriteList.splice(i, 1);
+                }
+            }
         });
 
         this.player = this.game.add.sprite(0, this.game.height - 100 - 200, 'pirate1');
@@ -113,7 +135,7 @@ SeafarerGame.Game.prototype = {
                     this.player.body.velocity.x = 400;
                     this.bg_layer_one.x += .3;
                     this.player.body.setSize(80, 155, 0, 45);
-                }else if (this.cursors.left.isDown) {
+                } else if (this.cursors.left.isDown) {
                     this.player.animations.play('walk', 10, true);
                     this.player.body.velocity.x = -400;
                     this.bg_layer_one.x -= .3;
@@ -126,9 +148,8 @@ SeafarerGame.Game.prototype = {
                 //The game world is infinite in the x-direction, so we wrap around.
                 //We subtract padding so the player will remain in the middle of the screen when
                 //wrapping, rather than going to the end of the screen first
-                if(this.player.x <= 0)
-                {
-                  this.player.x = 0;
+                if (this.player.x <= 0) {
+                    this.player.x = 0;
                 }
                 this.game.world.wrap(this.player, 0, true);
             }
@@ -136,49 +157,46 @@ SeafarerGame.Game.prototype = {
             //generate projectiles based on probability and level
             var randomValueProjetile = this.game.rnd.integerInRange(0, 1000);
             //10% chance to generate projectile
-            if(randomValueProjetile <= 3 + ((this.wraps + 1) * .05))
-            {
-              var chooseProjectile = this.game.rnd.integerInRange(0,2);
-              var projectileHeight = this.game.rnd.integerInRange(0,2);
-              var actualProjHeight = 0;
-              var proj;
-              switch(projectileHeight)
-              {
-                case 0:
-                    actualProjHeight = 200;
-                  break;
-                case 1:
-                    actualProjHeight = 300;
-                  break;
-                case 2:
-                    actualProjHeight = 400;
-                  break;
-              }
-              switch(chooseProjectile)
-              {
-                case 0:
-                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'spinningbomb');
-                  proj.animations.add('spin', [0,1,2,3]);
-                  proj.animations.play('spin', 10, true);
-                  proj.body.setSize(30, 20, 25, 20);
-                  break;
-                case 1:
-                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'seagull');
-                  proj.animations.add('flap', [0,1,2,3,4,5,6,7]);
-                  proj.animations.play('flap', 10, true);
-                  proj.body.setSize(45, 15, 35, 35);
-                  break;
-                case 2:
-                  proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'crab');
-                  proj.animations.add('crabwalk', [0,1,2,3]);
-                  proj.animations.play('crabwalk', 10, true);
-                  proj.body.setSize(15, 25, 50, 25);
-                  break;
-              }
-              //physics properties
-              proj.body.velocity.x = -250;
-              proj.body.immovable = true;
-              proj.body.collideWorldBounds = false;
+            if (randomValueProjetile <= 3 + ((this.wraps + 1) * .05)) {
+                var chooseProjectile = this.game.rnd.integerInRange(0, 2);
+                var projectileHeight = this.game.rnd.integerInRange(0, 2);
+                var actualProjHeight = 0;
+                var proj;
+                switch (projectileHeight) {
+                    case 0:
+                        actualProjHeight = 200;
+                        break;
+                    case 1:
+                        actualProjHeight = 300;
+                        break;
+                    case 2:
+                        actualProjHeight = 400;
+                        break;
+                }
+                switch (chooseProjectile) {
+                    case 0:
+                        proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'spinningbomb');
+                        proj.animations.add('spin', [0, 1, 2, 3]);
+                        proj.animations.play('spin', 10, true);
+                        proj.body.setSize(33, 45, 32, 25);
+                        break;
+                    case 1:
+                        proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'seagull');
+                        proj.animations.add('flap', [0, 1, 2, 3, 4, 5, 6, 7]);
+                        proj.animations.play('flap', 10, true);
+                        proj.body.setSize(50, 15, 30, 35);
+                        break;
+                    case 2:
+                        proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'crab');
+                        proj.animations.add('crabwalk', [0, 1, 2, 3]);
+                        proj.animations.play('crabwalk', 10, true);
+                        proj.body.setSize(30, 35, 30, 30);
+                        break;
+                }
+                //physics properties
+                proj.body.velocity.x = -250;
+                proj.body.immovable = true;
+                proj.body.collideWorldBounds = false;
             }
         }
     },
@@ -196,24 +214,24 @@ SeafarerGame.Game.prototype = {
     playerLand: function() {
         this.player.animations.play('walk', 10, true);
     },
-    playerHit: function(sprite, projectileSprite){
-      projectileSprite.kill();
-      this.player.hits--;
-      this.hitsActualText.setText("x" + this.player.hits);
-      //check death
-      if (this.player.hits == 0) {
-          //end game
-          sprite.kill();
-          //Levels completed
-          var deadText = "Arrgh crap. You died."
-          var deadTextStyle = {
-              font: "40px Arial",
-              fill: "#FFFFFF",
-              align: "center"
-          };
-          var actualDeadText = this.game.add.text(this.game.width/2 - 175, this.game.height/2 - 50, deadText, deadTextStyle);
-          actualDeadText.fixedToCamera = true;
-          this.player.alive = false;
-      }
+    playerHit: function(sprite, projectileSprite) {
+        projectileSprite.kill();
+        this.player.hits--;
+        this.hitsActualText.setText("x" + this.player.hits);
+        //check death
+        if (this.player.hits == 0) {
+            //end game
+            sprite.kill();
+            //Levels completed
+            var deadText = "Arrgh crap. You died."
+            var deadTextStyle = {
+                font: "40px Arial",
+                fill: "#FFFFFF",
+                align: "center"
+            };
+            var actualDeadText = this.game.add.text(this.game.width / 2 - 175, this.game.height / 2 - 50, deadText, deadTextStyle);
+            actualDeadText.fixedToCamera = true;
+            this.player.alive = false;
+        }
     }
 };

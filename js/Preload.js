@@ -51,6 +51,8 @@ SeafarerGame.Preload.prototype = {
         this.load.image('bg_layer_three', 'Resources/singleBlock.png')
         //1st pirate walk
         this.load.spritesheet('pirate1', 'Resources/PegLegFull.png', 100, 200, 20);
+        //2nd pirate walk
+        this.load.spritesheet('pirate2', 'Resources/StripedPirateFull.png', 100, 200, 20);
         //Hearts
         this.load.spritesheet('hearts', 'Resources/Heart.png', 100, 100, 6);
         //bomb projectile
