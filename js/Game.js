@@ -33,11 +33,11 @@ SeafarerGame.Game.prototype = {
 
         this.player = this.game.add.sprite(0, this.game.height - 100 - 200, 'pirate1');
         this.player.alive = true;
-        this.player.hits = 3;
+        this.player.hits = 10;
         this.player.animations.add('idle', [0]);
         this.player.animations.add('walk', [1, 2, 3, 4, 5, 6, 7, 8, 9]);
         this.player.animations.add('crouch', [11]);
-        this.player.animations.add('jump', [12, 13, 14, 15, 16, 17, 18, 19]);
+        this.player.animations.add('jump', [12, 13, 14, 15, 16, 17]);
         this.wraps = 0;
 
         //Text for lives (or hits)
@@ -63,7 +63,7 @@ SeafarerGame.Game.prototype = {
         //physics
         this.game.physics.arcade.enable(this.player);
         this.game.physics.arcade.enable(this.bg_layer_three);
-        this.player.body.gravity.y = 1300;
+        this.player.body.gravity.y = 1000;
         this.bg_layer_three.body.immovable = true;
         this.bg_layer_three.body.allowGravity = false;
 
@@ -100,28 +100,28 @@ SeafarerGame.Game.prototype = {
 
                 if (this.cursors.up.isDown) {
                     this.playerJump();
-                    this.player.body.setSize(100, 200, 0, 0);
+                    this.player.body.setSize(90, 120, 0, 80);
                     if (this.player.body.velocity.x > 0) {
                         this.bg_layer_one.x += .3;
                     }
                 } else if (this.cursors.down.isDown && this.player.body.touching.down) {
                     this.player.animations.play('crouch', 30, false);
                     this.player.body.velocity.x = 0;
-                    this.player.body.setSize(100, 150, 0, 50);
+                    this.player.body.setSize(80, 120, 0, 80);
                 } else if (this.cursors.right.isDown) {
                     this.player.animations.play('walk', 10, true);
-                    this.player.body.velocity.x = 300;
+                    this.player.body.velocity.x = 400;
                     this.bg_layer_one.x += .3;
-                    this.player.body.setSize(100, 200, 0, 0);
+                    this.player.body.setSize(80, 155, 0, 45);
                 }else if (this.cursors.left.isDown) {
                     this.player.animations.play('walk', 10, true);
-                    this.player.body.velocity.x = -300;
+                    this.player.body.velocity.x = -400;
                     this.bg_layer_one.x -= .3;
-                    this.player.body.setSize(100, 200, 0, 0);
+                    this.player.body.setSize(80, 155, 0, 45);
                 } else {
                     this.player.body.velocity.x = 0;
                     this.player.animations.play('idle', 10, true);
-                    this.player.body.setSize(100, 200, 0, 0);
+                    this.player.body.setSize(80, 155, 0, 45);
                 }
                 //The game world is infinite in the x-direction, so we wrap around.
                 //We subtract padding so the player will remain in the middle of the screen when
@@ -136,7 +136,7 @@ SeafarerGame.Game.prototype = {
             //generate projectiles based on probability and level
             var randomValueProjetile = this.game.rnd.integerInRange(0, 1000);
             //10% chance to generate projectile
-            if(randomValueProjetile <= 3)
+            if(randomValueProjetile <= 3 + ((this.wraps + 1) * .05))
             {
               var chooseProjectile = this.game.rnd.integerInRange(0,2);
               var projectileHeight = this.game.rnd.integerInRange(0,2);
@@ -172,11 +172,11 @@ SeafarerGame.Game.prototype = {
                   proj = this.projectilesGroup.create(this.game.world.width + 10, actualProjHeight, 'crab');
                   proj.animations.add('crabwalk', [0,1,2,3]);
                   proj.animations.play('crabwalk', 10, true);
-                  proj.body.setSize(18, 33, 50, 34);
+                  proj.body.setSize(15, 25, 50, 25);
                   break;
               }
               //physics properties
-              proj.body.velocity.x = -300;
+              proj.body.velocity.x = -250;
               proj.body.immovable = true;
               proj.body.collideWorldBounds = false;
             }
@@ -189,8 +189,8 @@ SeafarerGame.Game.prototype = {
     playerJump: function() {
         //when the ground is a sprite, we need to test for "touching" instead of "blocked"
         if (this.player.body.touching.down) {
-            this.player.animations.play('jump', 7, false);
-            this.player.body.velocity.y -= 450;
+            this.player.animations.play('jump', 30, false);
+            this.player.body.velocity.y -= 600;
         }
     },
     playerLand: function() {
@@ -213,6 +213,7 @@ SeafarerGame.Game.prototype = {
           };
           var actualDeadText = this.game.add.text(this.game.width/2 - 175, this.game.height/2 - 50, deadText, deadTextStyle);
           actualDeadText.fixedToCamera = true;
+          this.player.alive = false;
       }
     }
 };

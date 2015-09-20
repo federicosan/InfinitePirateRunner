@@ -11,12 +11,16 @@ app.get('/', function(req, res) {
 });
 
 //===== Socket io miltiplayer stuff =====
-io.on('connection', function(client) {
-    client.on('join', function(data) {
-        console.log(data);
-        //send a message back to the currently connected client
-        client.emit('messageConnected', 'You connected successfully!');
-    });
+var allClients = [];
+io.sockets.on('connection', function(socket) {
+   allClients.push(socket);
+   var i1 = allClients.indexOf(socket);
+   console.log("Client " + i1 + " connected!");
+   socket.on('disconnect', function() {
+   	  var i2 = allClients.indexOf(socket);
+      console.log("Client " + i2 + " disconnected!");
+      allClients.splice(i2, 1);
+   });
 });
 
 //Use anything from this root folder
