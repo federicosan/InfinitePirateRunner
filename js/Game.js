@@ -21,38 +21,6 @@ SeafarerGame.Game.prototype = {
         this.hearts.animations.add('pulse', [0, 1, 2, 3, 4, 5]);
         this.hearts.animations.play('pulse', 10, true);
 
-        //connect to server
-        var playerList;
-        var playerSpriteList = [];
-
-        var ipAddress = window.location.href;
-        var socket = io.connect(ipAddress);
-        socket.on('connect', function(data) {
-            console.log("Connected!");
-        });
-        socket.on('all_playerConnected', function(data) {
-            console.log("Player joined!");
-            playerList = data['d'];
-            //Create a sprite for this new player - making sure its not 'me'
-            for (var i = 0; i < playerList.length; i++) {
-                if (playerList[i]['s'] != socket.id) {
-                    playerSpriteList.push(SeafarerGame.game.add.sprite(playerList[i]['x'], playerList[i]['y'], 'pirate2'));
-                }
-            }
-        });
-        socket.on('all_playerDisconnected', function(data) {
-            console.log("Player left!");
-            socketid = data;
-            //Destroy the players corresponding sprite
-            for (var i = 0; i < playerList.length; i++) {
-                if (playerList[i]['s'] == socketid) {
-                    playerSpriteList[i].kill();
-                    playerList.splice(i, 1);
-                    playerSpriteList.splice(i, 1);
-                }
-            }
-        });
-
         this.player = this.game.add.sprite(0, this.game.height - 100 - 200, 'pirate1');
         this.player.alive = true;
         this.player.hits = 10;
@@ -61,6 +29,61 @@ SeafarerGame.Game.prototype = {
         this.player.animations.add('crouch', [11]);
         this.player.animations.add('jump', [12, 13, 14, 15, 16, 17]);
         this.wraps = 0;
+
+        //connect to server
+        this.playerList = [];
+        this.playerSpriteList = {};
+        this.playerSpriteList['d'] = [];
+
+        var ipAddress = window.location.href;
+        this.socket = io.connect(ipAddress);
+
+        var self = this;
+        this.socket.on('connect', function(data) {
+            console.log("Connected!");
+            self.mySocketId = self.socket.id;
+        });
+        this.socket.on('all_playerConnected', function(data) {
+            console.log("Player joined!");
+            self.playerList = data['d'];
+            //Create a sprite for new player - making sure its not 'me'
+            for (var i = 0; i < self.playerList.length; i++) {
+                if (self.playerList[i]['s'] != self.mySocketId) {
+                    self.playerSpriteList['d'].push({
+                        s: self.playerList[i]['s'],
+                        sprite: SeafarerGame.game.add.sprite(self.playerList[i]['x'], self.playerList[i]['y'], 'pirate2')
+                    });
+                }
+            }
+        });
+        this.socket.on('all_playerDisconnected', function(data) {
+            console.log("Player left!");
+            localSocketId = data;
+            //Destroy the players corresponding sprite
+            for (var i = 0; i < self.playerSpriteList['d'].length; i++) {
+                if (self.playerSpriteList['d'][i]['s'] == localSocketId) {
+                    self.playerSpriteList['d'][i]['sprite'].kill();
+                    for (s = 0; s < self.playerList.length; s++) {
+                        if (self.playerList[i]['s'] == localSocketId) {
+                            self.playerList.splice(s, 1);
+                        }
+                    }
+                    self.playerSpriteList['d'].splice(i, 1);
+                }
+            }
+        });
+        //Player position update
+        this.socket.on('all_PlayerPositionUpdate', function(data) {
+            playerListUpdate = data;
+            console.log(playerListUpdate);
+            //Create a sprite for this new player - making sure its not 'me'
+            for (var i = 0; i < playerListUpdate.length; i++) {
+                if (playerListUpdate[i]['s'] != playerListUpdate['s']) {
+                    self.playerSpriteList[i].x = playerListUpdate[i]['x'];
+                    self.playerSpriteList[i].y = playerListUpdate[i]['y'];
+                }
+            }
+        });
 
         //Text for lives (or hits)
         this.hitsText = "x" + this.player.hits;
@@ -151,6 +174,21 @@ SeafarerGame.Game.prototype = {
                 if (this.player.x <= 0) {
                     this.player.x = 0;
                 }
+
+                //Update server with player position
+                for (var i = 0; i < this.playerList.length; i++) {
+                    if (this.playerList[i]['s'] == this.mySocketId) {
+                        this.playerList[i]['x'] = this.player.x;
+                        this.playerList[i]['y'] = this.player.y;
+                        var coords = {
+                            s: this.playerList[i]['s'],
+                            x: this.playerList[i]['x'],
+                            y: this.playerList[i]['y']
+                        };
+                        this.socket.emit('playerPositionUpdate', coords);
+                    }
+                }
+
                 this.game.world.wrap(this.player, 0, true);
             }
 

@@ -35,7 +35,23 @@ io.sockets.on('connect', function(socket) {
         console.log(allClients);
         socket.broadcast.emit('all_playerDisconnected', socket.id);
     });
+});
 
+//player position update
+io.sockets.on('playerPositionUpdate', function(data) {
+    var sId = data['s'];
+    for (var i = 0; i < allClients['d'].length; i++) {
+        if (allClients['d'][i]['s'] == sId) {
+            allClients['d'][i]['x'] = data['x'];
+            allClients['d'][i]['y'] = data['y'];
+            var coords = {
+                s: allClients['d'][i]['s'],
+                x: allClients['d'][i]['x'],
+                y: tallClients['d'][i]['y']
+            };
+            socket.broadcast.emit('all_PlayerPositionUpdate', coords);
+        }
+    }
 });
 
 //Use anything from this root folder
