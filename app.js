@@ -25,6 +25,7 @@ io.sockets.on('connect', function(socket) {
     socket.emit('all_playerConnected', allClients);
     socket.broadcast.emit('all_playerConnected', allClients);
     console.log(allClients);
+
     socket.on('disconnect', function() {
         console.log('Client disconnected!');
         for (var i = 0; i < allClients['d'].length; i++) {
@@ -35,23 +36,24 @@ io.sockets.on('connect', function(socket) {
         console.log(allClients);
         socket.broadcast.emit('all_playerDisconnected', socket.id);
     });
-});
 
-//player position update
-io.sockets.on('playerPositionUpdate', function(data) {
-    var sId = data['s'];
-    for (var i = 0; i < allClients['d'].length; i++) {
-        if (allClients['d'][i]['s'] == sId) {
-            allClients['d'][i]['x'] = data['x'];
-            allClients['d'][i]['y'] = data['y'];
-            var coords = {
-                s: allClients['d'][i]['s'],
-                x: allClients['d'][i]['x'],
-                y: tallClients['d'][i]['y']
-            };
-            socket.broadcast.emit('all_PlayerPositionUpdate', coords);
+    socket.on('playerPositionUpdate', function(data) {
+        var sId = data['s'];
+        for (i = 0; i < allClients['d'].length; i++) {
+            if (allClients['d'][i]['s'] == sId) {
+                allClients['d'][i]['x'] = data['x'];
+                allClients['d'][i]['y'] = data['y'];
+                var coords = {
+                    s: allClients['d'][i]['s'],
+                    x: allClients['d'][i]['x'],
+                    y: allClients['d'][i]['y']
+                };
+                socket.broadcast.emit('all_PlayerPositionUpdate', coords);
+                return;
+            }
         }
-    }
+    });
+
 });
 
 //Use anything from this root folder

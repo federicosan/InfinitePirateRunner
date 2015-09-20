@@ -47,12 +47,26 @@ SeafarerGame.Game.prototype = {
             console.log("Player joined!");
             self.playerList = data['d'];
             //Create a sprite for new player - making sure its not 'me'
-            for (var i = 0; i < self.playerList.length; i++) {
+            for (i = 0; i < self.playerList.length; i++) {
                 if (self.playerList[i]['s'] != self.mySocketId) {
-                    self.playerSpriteList['d'].push({
-                        s: self.playerList[i]['s'],
-                        sprite: SeafarerGame.game.add.sprite(self.playerList[i]['x'], self.playerList[i]['y'], 'pirate2')
-                    });
+                    if (self.playerSpriteList['d'].length < 1) {
+                        self.playerSpriteList['d'].push({
+                            s: self.playerList[i]['s'],
+                            sprite: SeafarerGame.game.add.sprite(self.playerList[i]['x'], self.playerList[i]['y'], 'pirate2')
+                        });
+                    } else {
+                        for (j = 0; j < self.playerSpriteList['d'].length; j++) {
+                            console.log(self.playerList[i]['s'] + " - " + self.playerSpriteList['d'][j]['s']);
+                            if (self.playerList[i]['s'] == self.playerSpriteList['d'][j]['s']) {
+                                break;
+                            } else {
+                                self.playerSpriteList['d'].push({
+                                    s: self.playerList[i]['s'],
+                                    sprite: SeafarerGame.game.add.sprite(self.playerList[i]['x'], self.playerList[i]['y'], 'pirate2')
+                                });
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -60,27 +74,36 @@ SeafarerGame.Game.prototype = {
             console.log("Player left!");
             localSocketId = data;
             //Destroy the players corresponding sprite
-            for (var i = 0; i < self.playerSpriteList['d'].length; i++) {
+            for (i = 0; i < self.playerSpriteList['d'].length; i++) {
                 if (self.playerSpriteList['d'][i]['s'] == localSocketId) {
                     self.playerSpriteList['d'][i]['sprite'].kill();
                     for (s = 0; s < self.playerList.length; s++) {
                         if (self.playerList[i]['s'] == localSocketId) {
                             self.playerList.splice(s, 1);
+                            break;
                         }
                     }
                     self.playerSpriteList['d'].splice(i, 1);
+                    return;
                 }
             }
         });
         //Player position update
         this.socket.on('all_PlayerPositionUpdate', function(data) {
             playerListUpdate = data;
-            console.log(playerListUpdate);
-            //Create a sprite for this new player - making sure its not 'me'
-            for (var i = 0; i < playerListUpdate.length; i++) {
-                if (playerListUpdate[i]['s'] != playerListUpdate['s']) {
-                    self.playerSpriteList[i].x = playerListUpdate[i]['x'];
-                    self.playerSpriteList[i].y = playerListUpdate[i]['y'];
+            //Update player position
+            for (i = 0; i < self.playerSpriteList['d'].length; i++) {
+                if (self.playerSpriteList['d'][i]['s'] == playerListUpdate['s']) {
+                    self.playerSpriteList['d'][i]['sprite'].x = playerListUpdate['x'];
+                    self.playerSpriteList['d'][i]['sprite'].y = playerListUpdate['y'];
+                    for (s = 0; s < self.playerList.length; s++) {
+                        if (self.playerList[i]['s'] == playerListUpdate['s']) {
+                            self.playerList[i]['x'] = playerListUpdate['x'];
+                            self.playerList[i]['y'] = playerListUpdate['y'];
+                            break;
+                        }
+                    }
+                    return;
                 }
             }
         });
